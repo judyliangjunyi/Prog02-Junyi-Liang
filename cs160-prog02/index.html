@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Show Your Work — a voter guide that cites every line</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="brand">
+    <div class="logo">✓</div>
+    <div>
+      <div class="brand-name">Show Your Work</div>
+      <div class="brand-sub">A voter guide that cites every line · Nov 3, 2026 ballot · Alameda County · class assignment, <b>not official voter information</b></div>
+    </div>
+  </div>
+  <div class="controls">
+    <label class="ctl">Model
+      <select id="model">
+        <option value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
+        <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+        <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
+        <option value="openai/gpt-4.1-mini">GPT-4.1 Mini</option>
+      </select>
+    </label>
+    <label class="ctl">OpenRouter key
+      <input id="apiKey" type="password" placeholder="sk-or-…" autocomplete="off">
+    </label>
+    <details class="costbox" id="costbox">
+      <summary><span class="cost-label">Session cost</span> <b id="costTotal">$0.0000</b> <span id="costCalls" class="muted">0 calls</span></summary>
+      <div class="costpanel">
+        <div class="muted small">Exact amounts from the <code>usage.cost</code> field OpenRouter returns. Cached views cost $0.</div>
+        <table id="costTable"><thead><tr><th>Operation</th><th>Model</th><th>Tokens</th><th>Time</th><th>Cost</th></tr></thead><tbody></tbody></table>
+        <div class="muted small" id="costAll"></div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab active" data-tab="measure">Understand a measure</button>
+  <button class="tab" data-tab="compare">Compare the two sides</button>
+  <button class="tab" data-tab="office">Explain an office</button>
+</nav>
+
+<div class="legend"><b>How to read this guide:</b>
+  <span><span class="sw official"></span>Green = certified text or handout facts, untouched</span>
+  <span><span class="sw ai"></span>Purple dashed = written by an AI model, with its source linked</span>
+  <span><span class="sw op"></span>Yellow = the AI's opinion, not a fact</span>
+</div>
+<main>
+  <!-- ============ 1. MEASURES ============ -->
+  <section id="tab-measure" class="panel active">
+    <h1 class="hero">Your ballot, in words you can use.</h1>
+    <p class="lede">Pick a measure and choose how you want it explained. Every plain-language version is written by an AI model from the measure's <b>full legal text only</b>, marked as generated, and is one click from the certified text.</p>
+    <div class="cards" id="measureCards"></div>
+
+    <div id="measureView" hidden>
+      <div class="mhead">
+        <h2 id="mLabel"></h2>
+        <div class="otitle" id="mTitle"></div>
+        <div class="muted small">Official title, written by the state · <a id="mOfficial" target="_blank">official page ↗</a> · <a id="mPdf" target="_blank">full legal text PDF ↗</a></div>
+      </div>
+
+      <div class="knobs">
+        <div class="knob">
+          <div class="knob-h">Reading level <span class="muted small" id="levelTarget"></span></div>
+          <div class="seg" id="levelSeg"></div>
+        </div>
+        <div class="knob">
+          <div class="knob-h">Length <span class="muted small" id="lengthTarget"></span></div>
+          <div class="seg" id="lengthSeg"></div>
+          <div class="note small" id="lengthNote" hidden></div>
+        </div>
+      </div>
+      <div class="warn" id="comboWarn" hidden></div>
+
+      <div id="renderArea"></div>
+
+      <h3 class="section-h">Voter topics of concern</h3>
+      <p class="muted small">Bars are a keyword count with <b>no AI</b>: how many paragraphs of the legal text mention each topic's words. A rough signal of where the measure touches your life, not a guarantee of impact. Press <b>Explain</b> for an AI reading of that topic, with its opinion clearly labelled.</p>
+      <div id="topics"></div>
+      <div id="topicOut"></div>
+
+      <details class="answerkey">
+        <summary>Official summary (the state's answer key — never sent to the model)</summary>
+        <div id="officialSummary"></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ 2. COMPARE ============ -->
+  <section id="tab-compare" class="panel">
+    <h1 class="hero">What each side claims, side by side.</h1>
+    <p class="lede">Claims are extracted by an AI model from the printed arguments and rebuttals. This guide never says who is right — it shows where the sides <b>dispute</b> a point, where one side <b>never raised</b> it, and where a point appears <b>only in a rebuttal</b> the other side could not answer.</p>
+    <div class="pickrow"><label>Measure <select id="cMeasure"></select></label></div>
+    <div class="disclaimer" id="cDisclaimer"></div>
+    <div id="cStructure"></div>
+    <div id="cSigners"></div>
+    <div id="cRun"></div>
+    <div id="cOut"></div>
+  </section>
+
+  <!-- ============ 3. OFFICES ============ -->
+  <section id="tab-office" class="panel">
+    <h1 class="hero">The races at the bottom of the ballot.</h1>
+    <p class="lede">These offices decide real things that almost nobody can describe. Each explanation is generated from the handout's description, and says what the office does <b>not</b> control as well as what it does.</p>
+    <div class="cards" id="officeCards"></div>
+    <div id="officeView"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  Show Your Work · CS160 PROG 02 class project. Not official voter information; do not distribute. Source of all facts: <code>data/datapack.json</code>, built from the California Secretary of State's Official Voter Information Guide.
+</footer>
+
+<!-- Optional: graders can put their key in js/config.local.js (gitignored). Otherwise use the key field in the header. -->
+<script src="js/config.local.js" onerror="void 0"></script>
+<script src="data/datapack.js"></script>
+<script src="js/fk.js"></script>
+<script src="js/api.js"></script>
+<script src="js/prompts.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
